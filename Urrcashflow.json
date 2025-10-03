@@ -1,0 +1,953 @@
+{
+  "name": "My workflow 7",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {
+          "download": true
+        }
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -544,
+        704
+      ],
+      "id": "0b1e072b-4eb3-4907-806c-0d57c0fdf3ea",
+      "name": "Telegram Trigger",
+      "webhookId": "858dfe5a-dcdc-4632-b412-ee3cca12f3eb",
+      "credentials": {
+        "telegramApi": {
+          "id": "RDfPl7pqVlVAz7hw",
+          "name": "Telegram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "ad99e257-bcaf-42a2-b068-53e0c96729db",
+                    "leftValue": "={{ $json.message.photo[2] }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "object",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "69cae014-32a5-44e4-abb1-bd8324df9b65",
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": "=/laporan",
+                    "operator": {
+                      "type": "string",
+                      "operation": "startsWith"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "4f8d9425-641e-4044-a54a-d73444ea28e0",
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": "/help",
+                    "operator": {
+                      "type": "string",
+                      "operation": "startsWith"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "41e89fcf-d3a4-4a71-9a0b-5b0d7ea841fc",
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": "/",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -336,
+        688
+      ],
+      "id": "49c098a5-70f1-4174-8821-b1858e8c0c72",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "23f4316d-5a77-45ae-81e7-18ee4cacb995",
+              "leftValue": "={{ $json.candidates[0].content.parts[0].text }}",
+              "rightValue": "ERROR:",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {
+          "ignoreCase": true
+        }
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        480,
+        160
+      ],
+      "id": "c6bdc0a8-c76c-405e-af87-eb544cc10d2a",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=AIzaSyCSiyo9eQ6sptRu0bZh6JDwfu8hFTNg2TA",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"contents\": [\n    {\n      \"parts\": [\n        {\n\"text\": \"Analisa struk belanja pada gambar ini dan berikan informasi dalam format yang PERSIS seperti ini:\\n\\nTOKO: [nama toko dari struk]\\nTOTAL: [total pembayaran dalam angka saja tanpa Rp]\\nITEMS: [daftar barang yang dibeli, pisahkan dengan koma]\\nTANGGAL: [tanggal transaksi jika terlihat, atau 2025-06-19]\\n\\nContoh response yang benar:\\nTOKO: Alfamart\\nTOTAL: 25500\\nITEMS: Susu Ultra 1L, Roti Tawar, Sabun Lifebuoy\\nTANGGAL: 2025-06-19\\n\\nJika struk tidak jelas atau tidak bisa dibaca, berikan:\\nERROR: Struk tidak dapat dibaca dengan jelas\\n\\nPENTING: Hanya berikan response dalam format di atas!\"\n        },\n        {\n          \"inlineData\": {\n            \"mimeType\": \"image/jpeg\",\n            \"data\": \"{{ $json.data }}\"\n          }\n        }\n      ]\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        288,
+        160
+      ],
+      "id": "67c9ad8b-663e-4822-b755-9ae050c80b48",
+      "name": "Analisa gambar"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "=Yahhh struk tidak dapat dibaca dengan jelas.\n\nCoba pastikan:\n- Foto struk jelas dan tidak blur\n- Pencahayaan cukup\n- Semua text terlihat\n\nSilahkan foto ulang! 📷",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        704,
+        64
+      ],
+      "id": "93b1a6d8-47af-49a8-84ec-8c235ca352ce",
+      "name": "Respon error",
+      "webhookId": "8789614c-2e8b-4c58-be9b-38a462213126",
+      "credentials": {
+        "telegramApi": {
+          "id": "RDfPl7pqVlVAz7hw",
+          "name": "Telegram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Workflow untuk upload gambar struk",
+        "height": 460,
+        "width": 1140,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "5617b2a7-1349-4b5c-a856-9229a98c07c5",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "options": {
+          "temperature": 0.1
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        80,
+        1648
+      ],
+      "id": "ab45548b-6e20-41e6-82a8-3c09def7f3ac",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "06Q6PVEXnZtEHHDp",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message.text }}",
+        "options": {
+          "systemMessage": "=Kamu adalah parser text belanja yang mengubah input text fleksibel menjadi format terstruktur.\n\nTUGAS: Analisa text belanja dan ubah menjadi format PERSIS seperti ini:\n\nTOKO: [nama toko dari text, jika tidak ada tulis 'Manual Input']\nTOTAL: [total harga dalam angka saja tanpa Rp/ribu/rb]\nITEMS: [daftar barang yang dibeli dengan kuantitas]\nTANGGAL: {{ $now.format('yyyy-MM-dd') }}\n\nCONTOH:\nInput: \"beli Telur 1kg Rp 20rb di Toko Mbak Ita\"\nOutput:\nTOKO: Toko Mbak Ita\nTOTAL: 20000\nITEMS: Telur 1kg\nTANGGAL: 2025-06-19\n\nInput: \"beli susu ultra 2 botol sama roti tawar 15 ribu\"\nOutput:\nTOKO: Manual Input\nTOTAL: 15000\nITEMS: Susu Ultra 2 botol, Roti Tawar\nTANGGAL: 2025-06-19\n\nJika tidak bisa dipahami, berikan:\nERROR: Text belanja tidak dapat dipahami\n\nPENTING: Hanya berikan response dalam format di atas!"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        144,
+        1440
+      ],
+      "id": "ac38ea7a-8b37-4f19-9a25-1e9d2c28b325",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "58fafc3a-fff2-4a25-896c-ea90769b0c9a",
+              "leftValue": "={{ $json.output }}",
+              "rightValue": "ERROR:",
+              "operator": {
+                "type": "string",
+                "operation": "startsWith"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {
+          "ignoreCase": true
+        }
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        512,
+        1440
+      ],
+      "id": "d71e186d-5a27-456a-8e26-07aac2056969",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "content": "## Input data manual",
+        "height": 560,
+        "width": 1160,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        1280
+      ],
+      "typeVersion": 1,
+      "id": "3e94337c-862b-44cc-83a3-ab178382e38e",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message.text }}",
+        "options": {
+          "systemMessage": "=Kamu adalah asisten laporan keuangan untuk user bangtutorial.\n\nINFORMASI WAKTU:\n- Waktu sekarang: {{ $now }}\n- Tanggal hari ini: {{ $today.format('yyyy-MM-dd') }}\n\nTUGAS:\n1. Analisa permintaan user untuk laporan pengeluaran\n2. Gunakan tool \"catatan_keuangan\" untuk ambil data catatan pengeluaran\n3. Filter data sesuai periode yang diminta:\n   - \"hari ini\" → data tanggal hari ini\n   - \"minggu ini\" → data tanggal 1 minggu terakhir\n   - \"bulan ini\" → data dalam bulan ini\n4. Hitung total pengeluaran dan jumlah transaksi\n5. Format laporan yang rapi dalam bahasa Indonesia\n\nSTRUKTUR DATA SHEETS:\n- Kolom A: Toko\n- Kolom B: Total (dalam rupiah)\n- Kolom C: Items \n- Kolom D: Tanggal Struk\n- Kolom E: Tanggal Input\n- Kolom F: Waktu Input\n\nFORMAT LAPORAN:\n📊 *Laporan Pengeluaran [Periode]*\n📅 [Rentang Tanggal]\n\n💰 *Total Pengeluaran:* Rp [total pengeluaran]\n🛒 *Jumlah Transaksi:* [jumlah] kali\n\n📋 *Detail Transaksi:*\n--\n📅 *[Tanggal]*\n📝 *[Toko]:* [Items]\n💵 *Pengeluaran:* Rp [amount]\n--\n\nPENTING: \n- Urutkan transaksi berdasarkan tanggal (terbaru ke terlama)\n- Gunakan format mata uang Indonesia (Rp 43.500)\n- Setiap detail transaksi dipisah dengan garis \"--\"\n- Gunakan emoji sesuai format di atas\n\nJika tidak ada data untuk periode tersebut, beri pesan ramah bahwa belum ada transaksi."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        112,
+        592
+      ],
+      "id": "8850a820-86dd-4456-9fcc-f2594a673a0c",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        80,
+        800
+      ],
+      "id": "867d418c-016a-4e39-a354-ef5f4fd80665",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "06Q6PVEXnZtEHHDp",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Request laporan pengeluaran",
+        "height": 460,
+        "width": 680,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        512
+      ],
+      "typeVersion": 1,
+      "id": "17f1c306-ed65-4b87-849d-0a63850f3938",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## Request /help",
+        "height": 240,
+        "width": 300
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        1008
+      ],
+      "typeVersion": 1,
+      "id": "090ee3bb-6e92-454a-886f-a70bebb0fd26",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "operation": "binaryToPropery",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        80,
+        160
+      ],
+      "id": "dfe89cd1-4575-4a61-b424-8e7be7c7199a",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1s246VnMVeXjEEqFIfU5l8hB3Fv9mmixybvjA6NLwDG8",
+          "mode": "list",
+          "cachedResultName": "Bookkeeping",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1s246VnMVeXjEEqFIfU5l8hB3Fv9mmixybvjA6NLwDG8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "HUHA",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1s246VnMVeXjEEqFIfU5l8hB3Fv9mmixybvjA6NLwDG8/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Toko": "={{ $json.output.match(/TOKO: (.+)/)[1] }}",
+            "Total": "={{ $json.output.match(/TOTAL: (.+)/)[1] }}",
+            "Items": "={{ $json.output.match(/ITEMS: (.+)/)[1] }}",
+            "Tanggal Struk": "={{ $json.output.match(/TANGGAL: (.+)/)[1] }}",
+            "Tanggal Input": "={{ $now.format('yyyy-MM-dd') }}",
+            "Waktu Input": "={{ $now.format('HH:mm:ss') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Toko",
+              "displayName": "Toko",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Total",
+              "displayName": "Total",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Items",
+              "displayName": "Items",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Tanggal Struk",
+              "displayName": "Tanggal Struk",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Tanggal Input",
+              "displayName": "Tanggal Input",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Waktu Input",
+              "displayName": "Waktu Input",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        720,
+        1552
+      ],
+      "id": "e1eaac83-7569-4a10-b75c-5d1c87d80e2b",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Ugwt7lJEIICHLjT9",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1s246VnMVeXjEEqFIfU5l8hB3Fv9mmixybvjA6NLwDG8",
+          "mode": "list",
+          "cachedResultName": "Bookkeeping",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1s246VnMVeXjEEqFIfU5l8hB3Fv9mmixybvjA6NLwDG8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "HUHA",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1s246VnMVeXjEEqFIfU5l8hB3Fv9mmixybvjA6NLwDG8/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Toko": "={{ $json.candidates[0].content.parts[0].text.match(/TOKO: (.+)/)[1] }}",
+            "Total": "={{ $json.candidates[0].content.parts[0].text.match(/TOTAL: (.+)/)[1] }}",
+            "Items": "={{ $json.candidates[0].content.parts[0].text.match(/ITEMS: (.+)/)[1] }}",
+            "Tanggal Struk": "={{ $json.candidates[0].content.parts[0].text.match(/TANGGAL: (.+)/)[1] }}",
+            "Tanggal Input": "={{ $now.format('yyyy-MM-dd') }}",
+            "Waktu Input": "={{ $now.format('HH:mm:ss') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Toko",
+              "displayName": "Toko",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Total",
+              "displayName": "Total",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Items",
+              "displayName": "Items",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Tanggal Struk",
+              "displayName": "Tanggal Struk",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Tanggal Input",
+              "displayName": "Tanggal Input",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Waktu Input",
+              "displayName": "Waktu Input",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        704,
+        272
+      ],
+      "id": "615a1d8e-1125-46e7-9277-aba46024c9a6",
+      "name": "Append row in Bookkeeping",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Ugwt7lJEIICHLjT9",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1s246VnMVeXjEEqFIfU5l8hB3Fv9mmixybvjA6NLwDG8",
+          "mode": "list",
+          "cachedResultName": "Bookkeeping",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1s246VnMVeXjEEqFIfU5l8hB3Fv9mmixybvjA6NLwDG8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "HUHA",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1s246VnMVeXjEEqFIfU5l8hB3Fv9mmixybvjA6NLwDG8/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        304,
+        800
+      ],
+      "id": "f1041a1c-cd85-44e7-9a4d-994dd7a63612",
+      "name": "Get row(s) in Bookkeeping in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Ugwt7lJEIICHLjT9",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "=✅ *Data belanja manual berhasil disimpan!*\n\n🏪 *Toko:* {{ $json.Toko }}\n💰 *Total:* {{ $json.Total }}\n📦 *Items:* {{ $json.Items }}\n📅 *Tanggal:* {{ $json['Tanggal Struk'] }}\n\n📊 Data telah tersimpan ke Google Sheets!",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        928,
+        272
+      ],
+      "id": "0270224f-6764-4573-964b-804364039e74",
+      "name": "Balasannya",
+      "webhookId": "73daee3c-75d6-4a6e-8bf4-10cb9c4a811e",
+      "credentials": {
+        "telegramApi": {
+          "id": "RDfPl7pqVlVAz7hw",
+          "name": "Telegram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        464,
+        592
+      ],
+      "id": "928149d9-bd36-4301-88fa-eb6c7de7e712",
+      "name": "Balasannya1",
+      "webhookId": "aa9bb08d-1cf8-4297-9bde-0edc92b48c4e",
+      "credentials": {
+        "telegramApi": {
+          "id": "RDfPl7pqVlVAz7hw",
+          "name": "Telegram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "❌ *Tidak dapat memahami input belanja*\n\nContoh format yang benar:\n• \"beli Telur 1kg Rp 20rb di Toko Mbak Ita\"\n• \"beli susu ultra 2 botol sama roti tawar 15 ribu\"\n• \"belanja di alfamart beli mie indomie 5 bungkus 12000\"\n• \"jajan bakso 2 porsi 20 ribu\"\n\n💡 *Tips:*\n- Sebutkan barang yang dibeli\n- Sertakan harga (opsional)\n- Sebutkan nama toko (opsional)\n\nCoba lagi dengan format yang lebih jelas atau klik /help untuk bantuan! 📝",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        720,
+        1360
+      ],
+      "id": "7a423b33-5584-4d99-b0ce-619e626d6057",
+      "name": "Respon error1",
+      "webhookId": "f85bbc7c-1df6-476e-81d9-5ba40c367099",
+      "credentials": {
+        "telegramApi": {
+          "id": "RDfPl7pqVlVAz7hw",
+          "name": "Telegram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "=✅ *Data belanja manual berhasil disimpan!*\n\n🏪 *Toko:* {{ $json.Toko }}\n💰 *Total:* Rp {{ $json.Total }}\n📦 *Items:* {{ $json.Items }}\n📅 *Tanggal:* {{ $json['Tanggal Struk'] }}\n\n📊 Data telah tersimpan ke Google Sheets!",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        928,
+        1552
+      ],
+      "id": "c324a281-e42e-4982-9750-44d64228f7d6",
+      "name": "Balasannya2",
+      "webhookId": "ea1f0b63-d040-480a-a232-838662ad17d8",
+      "credentials": {
+        "telegramApi": {
+          "id": "RDfPl7pqVlVAz7hw",
+          "name": "Telegram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.message.chat.id }}",
+        "text": "=🤖 *Bot Catatan Pengeluaran*\n\n📸 *Kirim foto struk* → Otomatis tersimpan\n✍️ *Ketik pembelian* → \"beli beras 20rb di warung asep\"\n📊 *Cek laporan* → `/laporan hari ini`\n\n💡 *Command:*\n• `/laporan hari ini` - Pengeluaran hari ini\n• `/laporan minggu ini` - Pengeluaran minggu ini  \n• `/laporan bulan ini` - Pengeluaran bulan ini\n• `/help` - Panduan ini\n\nMulai dengan kirim foto struk atau ketik belanja Anda! 🚀",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        112,
+        1072
+      ],
+      "id": "1591161c-3a1c-41e7-9058-4363a399b948",
+      "name": "Send a text message",
+      "webhookId": "7ff87751-1f29-417d-a237-acb30f7b9faa",
+      "credentials": {
+        "telegramApi": {
+          "id": "RDfPl7pqVlVAz7hw",
+          "name": "Telegram account 3"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analisa gambar": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Respon error",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Append row in Bookkeeping",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Respon error1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Balasannya1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Analisa gambar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Balasannya2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in Bookkeeping": {
+      "main": [
+        [
+          {
+            "node": "Balasannya",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in Bookkeeping in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1b4da5ca-95e4-42e6-9bc6-562deb1aa708",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "611dfaf1d7756452a451eb1d023d7bc6a5cc843b457edfefd29e89eaec76c690"
+  },
+  "id": "enXwVRIQTZA54Jvk",
+  "tags": []
+}
